@@ -57,7 +57,9 @@ const Nav = () => {
           </SideMenuLi>
           <SideMenuLi>
             <SlideMenuButton>
-              <ProfileImage></ProfileImage>
+              <ProfileImage>
+                <img src="/image/mingki.jpeg" />
+              </ProfileImage>
             </SlideMenuButton>
           </SideMenuLi>
           <SideMenuLi>
@@ -86,7 +88,7 @@ const NavWrap = styled.div`
 `;
 
 const Logo = styled.div`
-  font-size: 26px;
+  font-size: 22px;
   font-weight: bold;
 
   @media only screen and (max-width: 768px) {
@@ -139,16 +141,22 @@ const SlideMenuButton = styled.button`
   margin: 0 3px;
   cursor: pointer;
   img {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 `;
 
 const ProfileImage = styled.div`
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid lightgray;
   border-radius: 100%;
-  background-color: lightgreen;
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    border: 1px solid white;
+  }
 `;
 
 const CompanyButton = styled(SlideMenuButton)`
