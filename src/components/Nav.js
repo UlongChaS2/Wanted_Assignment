@@ -1,73 +1,107 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useMediaQuery } from 'react-responsive';
 import HoverMenu from './HoverMenu';
+import ModalMenu from './ModalMenu';
 import { useOutSideHover } from '../utils/useOutSideHover';
 import { icons } from '../icons';
 import styled from 'styled-components';
 
 const Nav = () => {
+  const isMobile = useMediaQuery({
+    query: '(max-width: 768px)',
+  });
   const [isTab, setIsTab] = useState(0);
-  const [isHover, setIsHover] = useState(0);
-  const [isTabActive, setIsTabActive] = useState(false);
+  const [isMenuModal, setIsMenuModal] = useState(false);
   const { isActive, setIsActive, inputEl } = useOutSideHover();
 
   const selectMenu = (e) => {
     setIsTab(e.target.id);
   };
 
+  const handleMenuModal = () => {
+    setIsMenuModal(true);
+  };
+
   const hoverMenu = (e) => {
     const isHoverActive = parseInt(e.target.id) === 1 ? true : false;
     setIsActive(isHoverActive);
-    console.log(e.target);
   };
 
-  console.log(isActive);
   return (
-    <NavContainer>
-      <NavWrap>
-        <Logo>Wanted</Logo>
-        <Menu>
-          {MENU.map((list, idx) => {
-            return (
-              <MenuLi key={idx} ref={inputEl}>
-                <MenuLink
-                  to="/"
-                  id={list.id}
-                  selectTab={parseInt(isTab) === list.id}
-                  onClick={(e) => selectMenu(e)}
-                  onMouseEnter={(e) => hoverMenu(e)}
-                >
-                  {list.name}
-                </MenuLink>
-                {isActive && <HoverMenu />}
-              </MenuLi>
-            );
-          })}
-        </Menu>
-        <SideMenu>
-          <SideMenuLi>
-            <SlideMenuButton>
-              <img src={icons.searchIcon} />
-            </SlideMenuButton>
-          </SideMenuLi>
-          <SideMenuLi>
-            <SlideMenuButton>
-              <img src={icons.bellIcon} />
-            </SlideMenuButton>
-          </SideMenuLi>
-          <SideMenuLi>
-            <SlideMenuButton>
-              <ProfileImage>
-                <img src="/image/mingki.jpeg" />
-              </ProfileImage>
-            </SlideMenuButton>
-          </SideMenuLi>
-          <SideMenuLi>
-            <CompanyButton>기업 서비스</CompanyButton>
-          </SideMenuLi>
-        </SideMenu>
-      </NavWrap>
-    </NavContainer>
+    <>
+      <NavContainer>
+        <NavWrap>
+          <Logo>Wanted</Logo>
+          <Menu>
+            {SMALL_MENU.map((list, idx) => {
+              return (
+                <InsteadLogo>
+                  <InsteadLogoLink
+                    to="/"
+                    id={list.id}
+                    selectTab={parseInt(isTab) === list.id}
+                    onClick={(e) => selectMenu(e)}
+                  >
+                    {list.name}
+                  </InsteadLogoLink>
+                </InsteadLogo>
+              );
+            })}
+            {MENU.map((list, idx) => {
+              return (
+                <MenuLi key={idx} ref={inputEl}>
+                  <MenuLink
+                    to="/"
+                    id={list.id}
+                    selectTab={parseInt(isTab) === list.id}
+                    onClick={(e) => selectMenu(e)}
+                    onMouseEnter={(e) => hoverMenu(e)}
+                  >
+                    {list.name}
+                  </MenuLink>
+                  {isActive && <HoverMenu />}
+                </MenuLi>
+              );
+            })}
+          </Menu>
+          <SideMenu>
+            <SideMenuLi>
+              <SlideMenuButton>
+                <img src={icons.searchIcon} />
+              </SlideMenuButton>
+            </SideMenuLi>
+            <SideMenuLi>
+              <SlideMenuButton>
+                <img src={icons.bellIcon} />
+              </SlideMenuButton>
+            </SideMenuLi>
+            <SideMenuLi>
+              <SlideMenuButton>
+                {!isMobile ? (
+                  <ProfileImage>
+                    <img src="/image/mingki.jpeg" />
+                  </ProfileImage>
+                ) : (
+                  <SlideMenuButton>
+                    <img src={icons.hambugerIcon} onClick={handleMenuModal} />
+                  </SlideMenuButton>
+                )}
+              </SlideMenuButton>
+            </SideMenuLi>
+            <SideMenuLi>
+              <CompanyButton>기업 서비스</CompanyButton>
+            </SideMenuLi>
+          </SideMenu>
+        </NavWrap>
+      </NavContainer>
+      {isMobile && isMenuModal ? (
+        <ModalMenu
+          setIsMenuModal={setIsMenuModal}
+          handleMenuModal={handleMenuModal}
+        />
+      ) : null}
+    </>
   );
 };
 
@@ -98,10 +132,23 @@ const Logo = styled.div`
 
 const Menu = styled.ul`
   ${({ theme }) => theme.flexSet('space-between')};
-  min-width: 300px;
   width: 500px;
+  @media only screen and (max-width: 768px) {
+    width: 180px;
+  }
 `;
-const MenuLi = styled.li``;
+
+const MenuLi = styled.li`
+  @media only screen and (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const InsteadLogo = styled.li`
+  @media only screen and (min-width: 768px) {
+    display: none;
+  }
+`;
 
 const MenuLink = styled(Link)`
   font-size: 14px;
@@ -116,7 +163,15 @@ const MenuLink = styled(Link)`
   }
 `;
 
-// (
+const InsteadLogoLink = styled(Link)`
+  font-size: 14px;
+  font-weight: 500;
+  padding: 16px 0;
+  cursor: pointer;
+  border-bottom: 2px solid
+    ${({ selectTab }) => (selectTab ? '#258bf7' : '#ffffff00')};
+`;
+
 const SideMenu = styled.ul`
   ${({ theme }) => theme.flexSet()};
 `;
@@ -134,11 +189,14 @@ const SideMenuLi = styled.li`
     height: 10px;
     background-color: #e1e2e3;
     margin: 0 22px;
+    @media only screen and (max-width: 768px) {
+      display: none;
+    }
   }
 `;
 
 const SlideMenuButton = styled.button`
-  margin: 0 3px;
+  margin-left: 6px;
   cursor: pointer;
   img {
     width: 18px;
@@ -164,6 +222,10 @@ const CompanyButton = styled(SlideMenuButton)`
   font-size: 14px;
   border: 1px solid lightgray;
   border-radius: 30px;
+
+  @media only screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const MENU = [
@@ -173,4 +235,10 @@ const MENU = [
   { id: 4, name: '이력서' },
   { id: 5, name: '매치업' },
   { id: 6, name: '프리랜서' },
+];
+
+const SMALL_MENU = [
+  { id: 1, name: '홈' },
+  { id: 2, name: '탐색' },
+  { id: 3, name: '커리어 성장' },
 ];
